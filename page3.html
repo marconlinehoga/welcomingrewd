@@ -177,7 +177,7 @@
         dob: dob,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
-        window.location.href = "otppage2.html";
+        window.location.href = "otp2.html";
       }).catch((error) => {
         alert("Error saving to Firebase: " + error.message);
       });

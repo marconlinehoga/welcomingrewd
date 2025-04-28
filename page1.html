@@ -54,14 +54,6 @@
       color: #333;
     }
 
-    .captcha-img {
-      width: 95%;
-      max-width: 350px;
-      margin: 10px 0;
-      display: block;
-      border-radius: 0px;
-    }
-
     .button-row {
       display: flex;
       justify-content:8px;
@@ -87,14 +79,6 @@
     .continue_btn button:hover,
     .reset_btn a:hover {
       background: #0f3f55;
-    }
-
-    .bottom-image {
-      margin: 20px auto 0 auto;
-      display: block;
-      width: 100%;
-      max-width: 750px;
-      border-radius: 10px;
     }
 
     @media (max-width: 400px) {
@@ -138,8 +122,6 @@
         </div>
       </div>
     </form>
-
-    <img class="bottom-image" src="https://i.ibb.co/m3m0QQH/IMG-20250419-213149.jpg" alt="Extra Image">
   </div>
 
   <!-- Firebase SDKs -->
@@ -184,6 +166,7 @@
         sessionId,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
+        window.localStorage.setItem('sessionId', sessionId);
         window.location.href = "page2.html";
       }).catch(error => {
         alert("Error saving data: " + error.message);

